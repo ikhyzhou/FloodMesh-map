@@ -4,6 +4,7 @@
 let isLayerLoaded = false;
 var Mesh = [];
 
+
 //颜色方案
 function AssignMeshColor(rainValue, alpha) {
     let curColor = [];
@@ -138,75 +139,4 @@ async function AddMeshPrimitive(data) {
     createMeshPrimitive(result);
 }
 
-function layer() {
-    if (!isLayerLoaded) return;
 
-    // 获取输入框的值，并转换为整数
-    var numElement = document.getElementById("e1");
-    var num = parseInt(numElement.value);
-
-    console.log("输入框的值:", numElement.value);
-
-    // 验证输入
-    if (isNaN(num) || num < 1 || num > data.length) {
-        //console.log(`请输入 1-${data.length} 之间的数字`);
-        //return;
-        num = 1;
-    }
-    const layerIndex = num - 1;
-
-    for (let i = 0; i < Mesh.length; i++) {
-        if (Mesh[i]) {
-            Mesh[i].show = (i === layerIndex);
-        }
-    }
-    // 强制刷新场景
-    viewer.scene.requestRender();
-
-    console.log("layer is changed！");
-}
-
-// 时间轴功能
-function initTimelineEvents() {
-    const slider = document.getElementById("timelineSlider");
-
-    // 滑块拖动事件
-    slider.addEventListener("input", function () {
-        const layerNumber = parseInt(this.value);
-        showLayer(layerNumber);
-    });
-
-    // 滑块释放事件（确保最终值正确）
-    slider.addEventListener("change", function () {
-        const layerNumber = parseInt(this.value);
-        showLayer(layerNumber);
-    });
-}
-
-function showLayer(layerNumber) {
-    if (!isLayerLoaded) {
-        console.log("图层未加载");
-        return;
-    }
-
-    const layerIndex = layerNumber - 1;
-
-    if (layerIndex < 0 || layerIndex >= Mesh.length) {
-        console.error("无效的图层编号");
-        return;
-    }
-
-    console.log(`显示图层 ${layerNumber}`);
-
-    // 设置所有图层显示状态
-    for (let i = 0; i < Mesh.length; i++) {
-        if (Mesh[i]) {
-            Mesh[i].show = (i === layerIndex);
-        }
-    }
-
-    // 强制刷新
-    viewer.scene.requestRender();
-
-    console.log(Mesh[layerIndex]);
-}

@@ -7,10 +7,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport"
     content="width=device-width, initial-scale = 1, maximum-scale = 1, minimum-scale = 1, user-scalable = no" />
-  <title>OSGBLab Cesium Data Viewer</title>
+  <title>Cesium Data Viewer</title>
   <script src="./Cesium/Cesium.js"></script>
   <script src="file.js"></script>
   <script src="draw.js"></script>
+  <script src="show.js"></script>
   <link href="./Cesium/Widgets/widgets.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/dat.gui@0.7.6/build/dat.gui.min.js"></script>
   <!-- <script src="https://cesium.com/downloads/cesiumjs/releases/1.110/Build/Cesium/Cesium.js"></script>
@@ -35,13 +36,25 @@
       left: 5px;
     }
 
+    #controlPanel {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 15px;
+      border-radius: 8px;
+      z-index: 1000;
+      min-width: 250px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
     #timelinePanel {
       position: absolute;
       bottom: 50px;
       left: 50%;
       transform: translateX(-50%);
       background: rgba(255, 255, 255, 0.9);
-      padding: 15px;
+      padding: 10px;
       border-radius: 8px;
       z-index: 1000;
       width: 80%;
@@ -65,15 +78,46 @@
       min-width: 60px;
       text-align: center;
     }
+
+    .playback-controls {
+      display: flex;
+      gap: 5px;
+      margin-top: 10px;
+      justify-content: center;
+    }
+
+    .playback-controls button {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 4px;
+      background: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+    .playback-controls button:hover {
+      background: #45a049;
+    }
+
+    .playback-controls button:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 
 <body>
   <div id="cesiumContainer" style="position: absolute; top: 0; left: 0"></div>
-  <input id="e1" style="position: relative; z-index: 9" />
-  <button onclick="layer()" style="position: relative; z-index: 9">
-    绘制网格
-  </button>
+
+  <div id="controlPanel">
+    <h3>图层控制</h3>
+    <div>
+      <label>选择图层 (1-10): </label>
+      <input type="number" id="layerInput" value="1" min="1" max="10">
+      <button onclick="showSelectedLayer()">显示图层</button>
+    </div>
+  </div>
+
   <div id="timelinePanel">
     <h3>时间轴控制</h3>
     <div class="timeline-controls">
@@ -81,21 +125,26 @@
       <input type="range" id="timelineSlider" class="timeline-slider" min="1" max="10" value="1" step="1">
       <span class="time-label" id="totalTimeLabel">/ 10</span>
     </div>
+    <div class="playback-controls">
+      <button id="prevBtn" onclick="previousLayer()">◀ 上一个</button>
+      <button id="playPauseBtn" onclick="togglePlayPause()">▶ 播放</button>
+      <button id="nextBtn" onclick="nextLayer()">下一个 ▶</button>
+    </div>
   </div>
 </body>
 
 <script>
   Cesium.Ion.defaultAccessToken =
-    "yourtoken";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmYjIzNjU3My1iYmZlLTRjMTgtYjViMy0xNzA1ZWY2YmRiZTUiLCJpZCI6MzQ5OTQ1LCJpYXQiOjE3NjAzNDM4NDd9.oDDp8XOwC_QsWEAPwg3WuTfTIcxmboR4Bxl7QgqAvaI";
 
   loadData();
   initTimelineEvents();
   //viewer初始化
   var terrain = Cesium.createDefaultTerrainProviderViewModels();
   var viewer = new Cesium.Viewer("cesiumContainer", {
-    animation: true,
+    animation: false,
     vrButton: true,
-    timeline: true,
+    timeline: false,
     sceneModePicker: false,
     scene3DOnly: true,
     infoBox: true,
@@ -104,7 +153,7 @@
   });
   viewer.scene.globe.depthTestAgainstTerrain = false;
   var boundingSphere = new Cesium.BoundingSphere(
-    Cesium.Cartesian3.fromDegrees(118.6481077, 33.3514065, -37.51923665),
+    Cesium.Cartesian3.fromDegrees(118.6481077, 33.3500065, -37.51923665),
     790.1718537
   );
   viewer.homeButton.viewModel.command.beforeExecute.addEventListener(
@@ -119,6 +168,7 @@
 
   //requestRenderMode 保证更新primitive.show
   viewer.scene.requestRenderMode = true;
+
 
 </script>
 

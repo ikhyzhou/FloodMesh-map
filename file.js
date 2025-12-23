@@ -100,7 +100,7 @@ async function loadData() {
       await AddMeshPrimitive(data[i]);  
     }
     isLayerLoaded = true;
-    layer();
+    //layer();
   } catch (error) {
     console.error("错误:", error);
   }
