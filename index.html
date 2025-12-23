@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<!--Created By OSGBLab(http://www.osgblab.com)-->
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale = 1, maximum-scale = 1, minimum-scale = 1, user-scalable = no" />
+  <title>OSGBLab Cesium Data Viewer</title>
+  <script src="./Cesium/Cesium.js"></script>
+  <script src="file.js"></script>
+  <script src="draw.js"></script>
+  <link href="./Cesium/Widgets/widgets.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/dat.gui@0.7.6/build/dat.gui.min.js"></script>
+  <!-- <script src="https://cesium.com/downloads/cesiumjs/releases/1.110/Build/Cesium/Cesium.js"></script>
+  <link href="https://cesium.com/downloads/cesiumjs/releases/1.110/Build/Cesium/Widgets/widgets.css" rel="stylesheet"> -->
+  <style>
+    html,
+    body,
+    #cesiumContainer {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+
+    .button {
+      top: 0;
+      z-index: 9;
+    }
+
+    .myPanel {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+    }
+
+    #timelinePanel {
+      position: absolute;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.9);
+      padding: 15px;
+      border-radius: 8px;
+      z-index: 1000;
+      width: 80%;
+      max-width: 600px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .timeline-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .timeline-slider {
+      flex: 1;
+    }
+
+    .time-label {
+      font-weight: bold;
+      min-width: 60px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="cesiumContainer" style="position: absolute; top: 0; left: 0"></div>
+  <input id="e1" style="position: relative; z-index: 9" />
+  <button onclick="layer()" style="position: relative; z-index: 9">
+    绘制网格
+  </button>
+  <div id="timelinePanel">
+    <h3>时间轴控制</h3>
+    <div class="timeline-controls">
+      <span class="time-label" id="currentTimeLabel">图层 1</span>
+      <input type="range" id="timelineSlider" class="timeline-slider" min="1" max="10" value="1" step="1">
+      <span class="time-label" id="totalTimeLabel">/ 10</span>
+    </div>
+  </div>
+</body>
+
+<script>
+  Cesium.Ion.defaultAccessToken =
+    "yourtoken";
+
+  loadData();
+  initTimelineEvents();
+  //viewer初始化
+  var terrain = Cesium.createDefaultTerrainProviderViewModels();
+  var viewer = new Cesium.Viewer("cesiumContainer", {
+    animation: true,
+    vrButton: true,
+    timeline: true,
+    sceneModePicker: false,
+    scene3DOnly: true,
+    infoBox: true,
+    terrainProviderViewModels: terrain,
+    selectedTerrainProviderViewModel: terrain[1],
+  });
+  viewer.scene.globe.depthTestAgainstTerrain = false;
+  var boundingSphere = new Cesium.BoundingSphere(
+    Cesium.Cartesian3.fromDegrees(118.6481077, 33.3514065, -37.51923665),
+    790.1718537
+  );
+  viewer.homeButton.viewModel.command.beforeExecute.addEventListener(
+    function (cmd) {
+      viewer.camera.flyToBoundingSphere(boundingSphere);
+      cmd.cancel = true;
+    }
+  );
+  viewer.camera.flyToBoundingSphere(boundingSphere, {
+    duration: 0,
+  });
+
+  //requestRenderMode 保证更新primitive.show
+  viewer.scene.requestRenderMode = true;
+
+</script>
+
+</html>
+
+<!-- 
+npx http-server -p 8080 --cors
+-->
