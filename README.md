@@ -2,6 +2,8 @@ Cesium 三维数据可视化练习项目
 
 一个基于Cesium.js的简单三维地理数据展示页面，实现了基本的图层切换和时间轴功能。
 
+在线页面：https://ikhyzhou.github.io/FloodMesh-map/
+
 项目说明
 
 这是我在学习WebGIS开发过程中做的一个练习项目，主要目的是：
