@@ -7,8 +7,8 @@ let isDataLoaded = false;
 
 const filepath1 = [];
 const filepath2 = [];
-const f1 = "/point/vertex/";
-const f2 = "/point/alpha shape/";
+const f1 = "./point/vertex/";
+const f2 = "./point/alpha shape/";
 
 var range = [];
 
